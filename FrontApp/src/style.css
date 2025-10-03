@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark --preferdark;
+}
+@import  "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
