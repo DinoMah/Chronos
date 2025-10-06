@@ -7,18 +7,20 @@ class ScheduleView extends InfernoComponent {
         super(props);
         this.state = {
             taskList: [
-                {taskNumber: 1, area: "COMPRAS", activity: "Cotización de materiales", user: "Yune Ruvalcaba"},
+                /*{taskNumber: 1, area: "COMPRAS", activity: "Cotización de materiales", user: "Yune Ruvalcaba"},
                 {taskNumber: 2, area: "CONTROL", activity: "Programación PLC", user: "Angel Vela"},
                 {taskNumber: 3, area: "MECANICA", activity: "Diseño 3D pieza", user: "Victor Paramo"},
                 {taskNumber: 4, area: "SISTEMAS", activity: "Programación aplicación web", user: "Carlos Herrera"},
-                {taskNumber: 5, area: "HYPERION", activity: "Elaboración plan de actividades", user: "Fernando Ibarra"},
+                {taskNumber: 5, area: "HYPERION", activity: "Elaboración plan de actividades", user: "Fernando Ibarra"},*/
             ]
         };
+        this.addItem = this.addItem.bind(this);
     }
 
     addItem(item) {
         item.taskNumber = this.state.taskList.length + 1;
-        this.state.taskList.push(item);
+        const newTaskList = [...this.state.taskList, item];
+        this.setState({ taskList: newTaskList });
     }
 
     render() {

@@ -1,7 +1,9 @@
 using Chronos.Data;
-using Chronos.Model;
 using Chronos.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -13,11 +15,27 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    var key = Encoding.ASCII.GetBytes("C2sS3G$V&G@94r!L*qi54L22yVB#9vt2");
+    builder.Services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+        });
+    builder.Services.AddAuthorization();
+
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
 
     builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IAreaService, AreaService>();
 
     // Add services to the container.
 
@@ -47,6 +65,7 @@ try
     }
 
     app.UseHttpsRedirection();
+    app.UseAuthentication();
     app.UseAuthorization();
     // Habilita CORS
     app.UseCors("AllowVite");

@@ -1,4 +1,5 @@
 ﻿using Chronos.Model;
+using Chronos.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,11 @@ namespace Chronos.Controller
     [Route("[controller]")]
     public class AreaController : ControllerBase
     {
+        public readonly IAreaService _areaService;
 
-        public AreaController()
+        public AreaController(IAreaService areaService)
         {
-
+            _areaService = areaService;
         }
 
         [HttpGet]
@@ -21,9 +23,17 @@ namespace Chronos.Controller
         }
 
         [HttpGet("all")]
-        public IActionResult GetAllAreas()
+        public async Task<IActionResult> GetAllAreas()
         {
-            return Ok();
+            try
+            {
+                var areas = await _areaService.GetAllAreasAsync();
+                return Ok(areas);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Could not get areas: {ex}");
+            }
         }
 
         [HttpGet("{id:int}")]

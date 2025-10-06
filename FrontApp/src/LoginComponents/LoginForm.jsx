@@ -21,19 +21,26 @@ class LoginForm extends InfernoComponent {
 
     render() {
         return (
-            <div>
-                <form onSubmit={this.handleSubmit}>
-                    <fieldset className='fieldset'>
-                        <legend className='fieldset-legend'>Usuario</legend>
-                        <input id="username" type='text' className='w-30' placeholder='Nombre de usuario...' value={this.state.username}></input>
-                    </fieldset>
-                    <fieldset>
-                        <legend className='fieldset-legend'>Contraseña</legend>
-                        <input id="password" type='password' className='w-30' value={this.state.password}></input>
-                    </fieldset>
-                    <input type='submit'></input>
-                </form>
+            <div className="card mx-auto bg-base-100 w-5/12 shadow-xl/30">
+                <figure>
+                    <img src="/hyperion_logo.png" className="m-10 w-sm"/>
+                </figure>
+                <div className="card-body">
+                    <form onSubmit={this.handleSubmit} className="justify-items-center">
+                        <fieldset className='fieldset justify-self-stretch mx-5'>
+                            <legend className='fieldset-legend'>Usuario</legend>
+                            <input id="username" type='text' className='w-full input-xl input' placeholder='Nombre de usuario...' value={this.state.username}></input>
+                        </fieldset>
+                        <fieldset className="fieldset justify-self-stretch mx-5">
+                            <legend className='fieldset-legend'>Contraseña</legend>
+                            <input id="password" type='password' className='w-full input input-xl' placeholder="********" value={this.state.password}></input>
+                        </fieldset>
+                        <input type='submit' className="btn btn-primary btn-lg mt-3 flex self-center" value="Iniciar Sesión"></input>
+                    </form>
+                </div>
             </div>
         );
     }
 }
+
+export default LoginForm;

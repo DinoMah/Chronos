@@ -1,20 +1,19 @@
+import table from "daisyui/components/table";
 import { Component as InfernoComponent } from "inferno";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 
 class Schedule extends InfernoComponent {
 	constructor(props) {
 		super(props);
-		this.state = {
-			tableData: this.props.taskList
-		}
 	}
 
 	componentDidMount() {
 		console.log("Schedule component mounted");
-		let table = new Tabulator(document.getElementById("scheduleTable"), {
+
+		this.table = new Tabulator(document.getElementById("scheduleTable"), {
 			height: "h-full", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-			data: this.state.tableData, //assign data to table
 			layout:"fitColumns", //fit columns to width of table (optional)
+			data: this.props.taskList,
 			columns:[ //Define Table Columns
 				{ title:"# Tarea", field:"taskNumber", hozAlign: "center", width: 120 },
 				{ title:"Área", field:"area", hozAlign:"center", width: 150 },
@@ -24,11 +23,15 @@ class Schedule extends InfernoComponent {
 				{ title: "Fecha de fin", field: "endDate", hozAlign: "center", width: 100},
 			],
 		});
-
 		//trigger an alert message when the row is clicked
-		table.on("rowClick", function(e, row){ 
+		this.table.on("rowClick", function(e, row){ 
 			alert("Row " + row.getData().id + " Clicked!!!!");
 		});
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.taskList !== prevProps.taskList)
+			this.table.setData(this.props.taskList);
 	}
 
 	render() {

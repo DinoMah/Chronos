@@ -2,6 +2,7 @@ import './style.css'
 import { createIcons, Search } from 'lucide';
 import { render } from 'inferno';
 import ScheduleView from './ScheduleComponents/ScheduleView.jsx';
+import LoginForm from './LoginComponents/LoginForm.jsx';
 
 createIcons({
   attrs: {
@@ -13,6 +14,10 @@ createIcons({
   }
 });
 
+console.log(import.meta.env.BASE_URL)
+
 const appDiv = document.getElementById("app");
 
-render(<ScheduleView/>, appDiv);
+render(<LoginForm/>, appDiv);
+
+//render(<ScheduleView/>, appDiv);

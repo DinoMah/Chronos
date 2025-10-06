@@ -56,7 +56,7 @@ namespace Chronos.Data
             {
                 using var connection = CreateConnection();
                 var properties = typeof(T).GetProperties().Where(p => p.Name != "Id").ToList();
-                var columns = string.Join(", ", properties.Select(p => p.Name));
+                var columns = string.Join(", ", properties.Select(p => $"[{p.Name}]"));
                 var values = string.Join(", ", properties.Select(p => "@" + p.Name));
                 var query = $"INSERT INTO [{_tableName}] ({columns}) VALUES ({values}); SELECT CAST(SCOPE_IDENTITY() as int)";
                 var id = await connection.QuerySingleAsync<int>(query, entity);
@@ -80,14 +80,14 @@ namespace Chronos.Data
             {
                 using var connection = CreateConnection();
                 var properties = typeof(T).GetProperties().Where(p => p.Name != "Id").ToList();
-                var setClause = string.Join(", ", properties.Select(p => $"{p.Name} = @{p.Name}"));
+                var setClause = string.Join(", ", properties.Select(p => $"[{p.Name}] = @{p.Name}"));
                 var idProperty = typeof(T).GetProperty("Id");
                 if (idProperty == null)
                 {
                     throw new InvalidOperationException("Entity must have an Id property");
                 }
                 var idValue = idProperty.GetValue(entity);
-                var query = $"UPDATE {_tableName} SET {setClause} WHERE Id = @Id";
+                var query = $"UPDATE [{_tableName}] SET {setClause} WHERE Id = @Id";
                 var affectedRows = await connection.ExecuteAsync(query, entity);
                 if (affectedRows == 0)
                 {

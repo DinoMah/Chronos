@@ -1,13 +1,15 @@
-import { Component as InfernoComponent } from "inferno";
+import { Component as InfernoComponent, linkEvent } from "inferno";
 import Select from '../Generic/SelectComponent';
 
 class TaskForm extends InfernoComponent {
     constructor(props) {
         super(props);
         this.state = {
-            area: 0,
+            areaId: 0,
+            areaName: "",
             activity: "",
-            user: 0,
+            userId: 0,
+            userName: "",
             initDate: "",
             endDate: "",
             areas: [
@@ -25,6 +27,10 @@ class TaskForm extends InfernoComponent {
                 {id: 5, name: "Nestor Josue"}
             ]
         };
+
+        //this.onAreaSelected = this.onAreaSelected.bind(this);
+        //this.onUserSelected = this.onAreaSelected.bind(this);
+        this.onRegisterAdd = this.onRegisterAdd.bind(this);
     }
 
     componentDidMount() {
@@ -33,28 +39,38 @@ class TaskForm extends InfernoComponent {
         fetch("http://localhost:5084/user/all")
         .then(res => console.log(res.json()))
         .catch(err => console.log(err));
+
+        fetch("http://localhost:5084/area/all")
+        .then(res => console.log(res.json()))
+        .catch(err => console.log(err))
     }
 
-    onAreaSelected(event) {
-        const selectedVal = event.target.selected;
+    onAreaSelected = (event) => {
+        const selArea = event.target.selectedIndex;
+        this.setState({
+            areaId: selArea, 
+            areaName: event.target.options[selArea].text
+        });
     }
 
-    onUserSelected(event) {
-        const selectedVal = event.target.selected;
+    onUserSelected = (event) => {
+        const selUser = event.target.selectedIndex;
+        this.setState({
+            userId: selUser,
+            userName: event.target.options[selUser].text
+        });
     }
 
-    onRegisterAdd() {
-        const areaId = document.getElementById("areaSelect").selectedValue;
-        const areaName = document.getElementById("areaSelect").text;
-        const userId = document.getElementById("userSelect").selectedValue;
-        const userName = document.getElementById("userSelect").selectedText;
+    onRegisterAdd(instance) {
         const activity = document.getElementById("activity").value;
         const initDate = document.getElementById("initDate").value;
         const endDate = document.getElementById("endDate").value;
         this.props.addItem({
             taskNumber: 0,
-            areaId: areaId, area: areaName,
-            userId: userId, user: userName,
+            areaId: this.state.areaId,
+            area: this.state.areaName,
+            userId: this.state.userId,
+            user: this.state.userName,
             activity: activity,
             initDate: initDate,
             endDate: endDate
@@ -66,12 +82,12 @@ class TaskForm extends InfernoComponent {
             <div className="flex flex-row content-center justify-center w-screen h-20">
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Área</legend>
-                    <Select id="areaSelect" className="w-30" defaultValue="Selecciona el área" options={this.state.areas} onChange={this.onAreaSelected}/>
+                    <Select id="areaSelect" className="w-30" defaultValue="Selecciona el área" options={this.state.areas} onChange={ this.onAreaSelected }/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Usuario</legend>
-                    <Select id="userSelect" className="w-30" defaultValue="Selecciona el usuario" options={this.state.users} onChange={this.onUserSelected}/>
+                    <Select id="userSelect" className="w-30" defaultValue="Selecciona el usuario" options={this.state.users} onChange={ this.onUserSelected }/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
@@ -90,7 +106,7 @@ class TaskForm extends InfernoComponent {
                 </fieldset>
                 
 
-                <button type="button" className="btn btn-success ml-15 self-center" onClick={this.onRegisterAdd}>Agregar actividad</button>
+                <button type="button" className="btn btn-success ml-15 self-center" onClick={ this.onRegisterAdd }>Agregar actividad</button>
             </div>
         );
     }
