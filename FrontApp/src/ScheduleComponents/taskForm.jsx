@@ -44,7 +44,21 @@ class TaskForm extends InfernoComponent {
     }
 
     onRegisterAdd() {
-        console.log("Agregar actividad presionado");
+        const areaId = document.getElementById("areaSelect").selectedValue;
+        const areaName = document.getElementById("areaSelect").text;
+        const userId = document.getElementById("userSelect").selectedValue;
+        const userName = document.getElementById("userSelect").selectedText;
+        const activity = document.getElementById("activity").value;
+        const initDate = document.getElementById("initDate").value;
+        const endDate = document.getElementById("endDate").value;
+        this.props.addItem({
+            taskNumber: 0,
+            areaId: areaId, area: areaName,
+            userId: userId, user: userName,
+            activity: activity,
+            initDate: initDate,
+            endDate: endDate
+        });
     }
 
     render() {

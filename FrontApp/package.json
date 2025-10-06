@@ -19,7 +19,6 @@
     "vite-plugin-babel": "^1.3.2"
   },
   "dependencies": {
-    "@hyperapp/router": "^0.7.2",
     "@tailwindcss/vite": "^4.1.13",
     "inferno": "^9.0.4",
     "inferno-dom": "^1.0.7",

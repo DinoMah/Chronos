@@ -17,26 +17,6 @@ try
 
     builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-    /*builder.Services.AddScoped(
-        typeof(IGenericRepository<>),
-        (ServiceProvider) =>
-            ActivatorUtilities
-            .CreateInstance<GenericRepository<User>>(
-                ServiceProvider,
-                connectionString
-            )
-    );
-
-    builder.Services.AddScoped(
-        typeof(IGenericRepository<>),
-        (ServiceProvider) =>
-            ActivatorUtilities
-            .CreateInstance<GenericRepository<Area>>(
-                ServiceProvider,
-                connectionString
-            )
-    );*/
-
     builder.Services.AddScoped<IUserService, UserService>();
 
     // Add services to the container.

@@ -16,10 +16,15 @@ class ScheduleView extends InfernoComponent {
         };
     }
 
+    addItem(item) {
+        item.taskNumber = this.state.taskList.length + 1;
+        this.state.taskList.push(item);
+    }
+
     render() {
         return (
             <div className="container">
-                <TaskForm taskList={this.state.taskList} />
+                <TaskForm taskList={this.state.taskList} addItem={this.addItem} />
                 <Schedule taskList={this.state.taskList} />
             </div>
         );

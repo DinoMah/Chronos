@@ -20,6 +20,8 @@ class Schedule extends InfernoComponent {
 				{ title:"Área", field:"area", hozAlign:"center", width: 150 },
 				{ title:"Actividad", field: "activity", hozAlign: "center", width: 400 },
 				{ title:"Responsable", field:"user", hozAlign:"center", width: 200 },
+				{ title: "Fecha de inicio", field: "initDate", hozAlign: "center", width: 100},
+				{ title: "Fecha de fin", field: "endDate", hozAlign: "center", width: 100},
 			],
 		});
 
