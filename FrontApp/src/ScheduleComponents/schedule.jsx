@@ -1,4 +1,3 @@
-import table from "daisyui/components/table";
 import { Component as InfernoComponent } from "inferno";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 
@@ -11,13 +10,13 @@ class Schedule extends InfernoComponent {
 		console.log("Schedule component mounted");
 
 		this.table = new Tabulator(document.getElementById("scheduleTable"), {
-			height: "h-full", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+			height: "100%",
 			layout:"fitColumns", //fit columns to width of table (optional)
 			data: this.props.taskList,
 			columns:[ //Define Table Columns
 				{ title:"# Tarea", field:"taskNumber", hozAlign: "center", width: 120 },
 				{ title:"Área", field:"area", hozAlign:"center", width: 150 },
-				{ title:"Actividad", field: "activity", hozAlign: "center", width: 400 },
+				{ title:"Actividad", field: "activity", hozAlign: "center", width: 400, frozen: true },
 				{ title:"Responsable", field:"user", hozAlign:"center", width: 200 },
 				{ title: "Fecha de inicio", field: "initDate", hozAlign: "center", width: 100},
 				{ title: "Fecha de fin", field: "endDate", hozAlign: "center", width: 100},
@@ -35,9 +34,11 @@ class Schedule extends InfernoComponent {
 	}
 
 	render() {
+		const { className } = this.props;
+
 		return (
-			<div class="container h-full">
-				<div id="scheduleTable" class="table overflow-x-auto h-full"></div>
+			<div className={ `${className} w-full @container overflow-x-scroll` }>
+				<div id="scheduleTable" className="table table-pin-cols w-full h-full"></div>
 			</div>
 		);
 	}

@@ -15,12 +15,12 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    var key = Encoding.ASCII.GetBytes("C2sS3G$V&G@94r!L*qi54L22yVB#9vt2");
+    var key = Encoding.ASCII.GetBytes(builder.Configuration["JWT:Key"] ?? "");
     builder.Services
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
-            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),

@@ -18,6 +18,6 @@ console.log(import.meta.env.BASE_URL)
 
 const appDiv = document.getElementById("app");
 
-render(<LoginForm/>, appDiv);
+//render(<LoginForm/>, appDiv);
 
-//render(<ScheduleView/>, appDiv);
+render(<ScheduleView/>, appDiv);

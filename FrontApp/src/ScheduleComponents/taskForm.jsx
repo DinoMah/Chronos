@@ -12,36 +12,44 @@ class TaskForm extends InfernoComponent {
             userName: "",
             initDate: "",
             endDate: "",
-            areas: [
-                {id: 1, name: "SISTEMAS"},
-                {id: 1, name: "MECÁNICA"},
-                {id: 1, name: "CONTROL"},
-                {id: 1, name: "ADMINISTRACIÓN"},
-                {id: 1, name: "INSTALACIONES"}
-            ],
-            users: [
-                {id: 1, name: "Juan Carlos Herrera"},
-                {id: 2, name: "Victor Paramo"},
-                {id: 3, name: "Yune Ruvalcaba"},
-                {id: 4, name: "Luis Herrera"},
-                {id: 5, name: "Nestor Josue"}
-            ]
+            areas: [],
+            users: []
         };
 
-        //this.onAreaSelected = this.onAreaSelected.bind(this);
-        //this.onUserSelected = this.onAreaSelected.bind(this);
         this.onRegisterAdd = this.onRegisterAdd.bind(this);
     }
 
     componentDidMount() {
         console.log("taskFormMounted");
 
+        const instance = this;
+
         fetch("http://localhost:5084/user/all")
-        .then(res => console.log(res.json()))
+        .then(res => {
+            if (!res.ok) throw new Error("Error: " + res.status);
+            return res.json()
+        })
+        .then(data => {
+            let usersData = [];
+            data.forEach(e => {
+                usersData.push({id: e.id, name: e.fullName});
+            });
+            instance.setState({users: usersData});
+        })
         .catch(err => console.log(err));
 
         fetch("http://localhost:5084/area/all")
-        .then(res => console.log(res.json()))
+        .then(res => {
+            if (!res.ok) throw new Error("Error: " + res.status);
+            return res.json();
+        })
+        .then(data => {
+            let areasData = [];
+            data.forEach(e => {
+                areasData.push({id: e.id, name: e.name });
+            });
+            instance.setState({areas: areasData});
+        })
         .catch(err => console.log(err))
     }
 
@@ -78,8 +86,10 @@ class TaskForm extends InfernoComponent {
     }
 
     render() {
+        const { className } = this.props;
+
         return (
-            <div className="flex flex-row content-center justify-center w-screen h-20">
+            <div className={ `${className} flex flex-row content-center justify-center w-screen h-20` }>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Área</legend>
                     <Select id="areaSelect" className="w-30" defaultValue="Selecciona el área" options={this.state.areas} onChange={ this.onAreaSelected }/>
@@ -97,7 +107,7 @@ class TaskForm extends InfernoComponent {
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Fecha Inicio</legend>
-                    <input id="initDate" type="date" className="input"/>
+                    <input id="initDate" type="date" className="input" min=""/>
                 </fieldset>
                 
                 <fieldset className="fieldset ml-2">
