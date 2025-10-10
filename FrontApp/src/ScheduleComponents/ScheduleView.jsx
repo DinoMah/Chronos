@@ -15,7 +15,8 @@ class ScheduleView extends InfernoComponent {
                 {taskNumber: 3, area: "MECANICA", activity: "Diseño 3D pieza", user: "Victor Paramo"},
                 {taskNumber: 4, area: "SISTEMAS", activity: "Programación aplicación web", user: "Carlos Herrera"},
                 {taskNumber: 5, area: "HYPERION", activity: "Elaboración plan de actividades", user: "Fernando Ibarra"},*/
-            ]
+            ],
+            enableTaskComponents: false
         };
         this.addItem = this.addItem.bind(this);
     }
@@ -63,7 +64,7 @@ class ScheduleView extends InfernoComponent {
             return;
         }
 
-        
+        // enviar los datos una vez todo esté correcto
     }
 
     onProjectNameChanged = (event) => {
@@ -73,7 +74,10 @@ class ScheduleView extends InfernoComponent {
         }
         else
             event.target.classList.add("input-error");
+        
+        this.checkProjectFields();
     };
+
     onProjectStartDateChanged = (event) => {
         if (event.target.value)
         {
@@ -83,7 +87,9 @@ class ScheduleView extends InfernoComponent {
         else
             event.target.classList.add("input-error");
 
+        this.checkProjectFields();
     };
+
     onProjectEndDateChanged = (event) => {
         if (event.target.value) {
             event.target.classList.remove("input-error");
@@ -91,7 +97,20 @@ class ScheduleView extends InfernoComponent {
         }
         else
             event.target.classList.add("input-error");
+
+        this.checkProjectFields();
     };
+
+    checkProjectFields = () => {
+        const projectNameInput = document.getElementById('projectName');
+        const projectStartDateInput = document.getElementById('projectStart');
+        const projectEndDateInput = document.getElementById('projectEnd');
+
+        this.setState({
+            enableTaskComponents:
+                (projectNameInput.value && projectStartDateInput.value && projectEndDateInput.value ? true : false)
+        });
+    }
 
     render() {
         return (
@@ -110,10 +129,15 @@ class ScheduleView extends InfernoComponent {
                         <input id='projectEnd' type='date' className="input" onChange={this.onProjectEndDateChanged}/>
                     </fieldset>
                 </div>
-                <TaskForm className="h-1/6" taskList={this.state.taskList} addItem={this.addItem} />
+                <TaskForm
+                    className="h-1/6"
+                    taskList={this.state.taskList}
+                    addItem={this.addItem}
+                    componentsEnabled={this.state.enableTaskComponents}
+                    minimumDate={this.state.projectStartDate} />
                 <Schedule className="h-3/6" taskList={this.state.taskList} />
-                <div className='h-1/6 mt-3 flex justify-center'>
-                    <input type='submit' className='btn btn-primary btn-lg' value='Enviar' onClick={ this.sendData }/>
+                <div className='h-1/6 flex justify-center'>
+                    <input type='submit' className='btn btn-primary btn-lg self-center' value='Enviar' onClick={ this.sendData }/>
                 </div>
             </div>
         );
