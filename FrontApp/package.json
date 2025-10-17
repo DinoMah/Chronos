@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "frappe-gantt": "^1.0.4",
     "inferno": "^9.0.4",
     "inferno-dom": "^1.0.7",
     "inferno-router": "^9.0.4",

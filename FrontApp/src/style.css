@@ -2,4 +2,5 @@
 @plugin "daisyui" {
   themes: light --default, dark --preferdark;
 }
-@import  "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
+@import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
+@import "frappe-gantt/dist/frappe-gantt.css";
