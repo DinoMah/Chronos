@@ -6,6 +6,7 @@ class TaskForm extends InfernoComponent {
         super(props);
         this.state = {
             controlsDisabled: !props.componentsEnabled,
+            userSelectDisabled: true,
             areaId: 0,
             areaName: "",
             activity: "",
@@ -14,7 +15,13 @@ class TaskForm extends InfernoComponent {
             initDate: "",
             endDate: "",
             areas: [],
-            users: []
+            users: [],
+            filteredUsers: [],
+            selectedArea: props.selectedArea,
+            selectedUser: props.selectedUser,
+            activity: props.activity,
+            startDate: props.startDate,
+            endDate: props.endDate
         };
 
         this.onRegisterAdd = this.onRegisterAdd.bind(this);
@@ -22,6 +29,16 @@ class TaskForm extends InfernoComponent {
 
     componentDidMount() {
         console.log("taskFormMounted");
+
+        const { selectedArea, selectedUser, activity, startDate, endDate } = this.props;
+
+        this.setState({
+            selectedArea: selectedArea || 0,
+            selectedUser: selectedUser || 0,
+            activity: activity || '',
+            startDate: startDate || '',
+            endDate: endDate || ''
+        });
 
         const instance = this;
 
@@ -33,9 +50,9 @@ class TaskForm extends InfernoComponent {
         .then(data => {
             let usersData = [];
             data.forEach(e => {
-                usersData.push({id: e.id, name: e.fullName});
+                usersData.push({id: e.id, name: e.fullName, area: e.area});
             });
-            instance.setState({users: usersData});
+            instance.setState({users: usersData, filteredUsers: usersData});
         })
         .catch(err => console.log(err));
 
@@ -50,13 +67,28 @@ class TaskForm extends InfernoComponent {
                 areasData.push({id: e.id, name: e.name });
             });
             instance.setState({areas: areasData});
+
         })
         .catch(err => console.log(err))
+
+
     }
 
     onAreaSelected = (event) => {
+
         const selArea = event.target.selectedIndex;
+
+        const disable = selArea == '0';
+
+        let users = this.state.users;
+
+        if (selArea != '0') {
+            users = users.filter(u => u.area == selArea);
+        }
+        
         this.setState({
+            userSelectDisabled: disable,
+            filteredUsers: users,
             areaId: selArea, 
             areaName: event.target.options[selArea].text
         });
@@ -70,10 +102,10 @@ class TaskForm extends InfernoComponent {
         });
     }
 
-    onRegisterAdd(instance) {
+    onRegisterAdd() {
         let badInputNum = 0;
 
-        const areaSelect = document.getElementById("areaSelect");
+        const areaSelect = document.getElementsByName("areaSelect")[0];
         if (!areaSelect.selectedIndex) {
             areaSelect.classList.add("input-error");
             areaSelect.focus();
@@ -83,7 +115,7 @@ class TaskForm extends InfernoComponent {
             areaSelect.classList.remove("input-error");
         }
 
-        const userSelect = document.getElementById("userSelect");
+        const userSelect = document.getElementsByName("userSelect")[0];
         if (!userSelect.selectedIndex) {
             userSelect.classList.add("input-error");
             userSelect.focus();
@@ -93,7 +125,7 @@ class TaskForm extends InfernoComponent {
             userSelect.classList.remove("input-error");
         }
         
-        const activityInput = document.getElementById("activity");
+        const activityInput = document.getElementsByName("activity")[0];
         const activity = activityInput.value;
         if (!activity) {
             activityInput.classList.add("input-error");
@@ -104,7 +136,7 @@ class TaskForm extends InfernoComponent {
             activityInput.classList.remove("input-error");
         }
         
-        const initDateInput = document.getElementById("initDate");
+        const initDateInput = document.getElementsByName("initDate")[0];
         const initDate = initDateInput.value;
         if (!initDate) {
             initDateInput.classList.add("input-error");
@@ -115,9 +147,15 @@ class TaskForm extends InfernoComponent {
             initDateInput.classList.remove("input-error");
         }
         
-        const endDateInput = document.getElementById("endDate");
-        const endDate = document.getElementById("endDate").value;
+        const endDateInput = document.getElementsByName("endDate")[0];
+        const endDate = document.getElementsByName("endDate")[0].value;
         if (!endDate) {
+            endDateInput.classList.add("input-error");
+            endDateInput.focus();
+            badInputNum += 1;
+        }
+        else if (endDate < initDate) {
+            alert("La fecha de fin no debe ser menor a la fecha de inicio");
             endDateInput.classList.add("input-error");
             endDateInput.focus();
             badInputNum += 1;
@@ -144,37 +182,39 @@ class TaskForm extends InfernoComponent {
     }
 
     render() {
-        const { className, minimumDate } = this.props;
+        const { className, minimumDate, maximumDate } = this.props;
+        const { selectedArea, selectedUser, activity, startDate, endDate } = this.state;
+        const controlsDisabled = !this.props.componentsEnabled;
 
         return (
             <div className={ `${className} flex flex-row content-center justify-center w-screen` }>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Área</legend>
-                    <Select id="areaSelect" className="w-30" disabled={this.state.controlsDisabled} defaultValue="Selecciona el área" options={this.state.areas} onChange={ this.onAreaSelected }/>
+                    <Select name="areaSelect" className="w-30" disabled={controlsDisabled} selected={selectedArea} defaultValue="Selecciona el área" options={this.state.areas} onChange={ this.onAreaSelected }/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Usuario</legend>
-                    <Select id="userSelect" className="w-30" disabled={this.state.controlsDisabled} defaultValue="Selecciona el usuario" options={this.state.users} onChange={ this.onUserSelected }/>
+                    <Select name="userSelect" className="w-30" disabled={this.state.userSelectDisabled} selected={selectedUser} defaultValue="Selecciona el usuario" options={this.state.filteredUsers} onChange={ this.onUserSelected }/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Actividad</legend>
-                    <input id="activity" type="text" className="input w-72" disabled={this.state.controlsDisabled}/>
+                    <input name="activity" type="text" className="input w-72" disabled={controlsDisabled} value={activity}/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Fecha Inicio</legend>
-                    <input id="initDate" type="date" className="input" min={minimumDate} disabled={this.state.controlsDisabled}/>
+                    <input name="initDate" type="date" className="input w-32" min={minimumDate} max={maximumDate} disabled={controlsDisabled} value={startDate}/>
                 </fieldset>
                 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Fecha Final</legend>
-                    <input id="endDate" type="date" className="input" disabled={this.state.controlsDisabled}/>
+                    <input name="endDate" type="date" className="input w-32" min={minimumDate} max={maximumDate} disabled={controlsDisabled} value={endDate}/>
                 </fieldset>
                 
 
-                <button type="button" className="btn btn-success ml-15 self-center" onClick={ this.onRegisterAdd } disabled={this.state.controlsDisabled}>Agregar actividad</button>
+                <button type="button" className="btn btn-success ml-15 self-center" onClick={ this.onRegisterAdd } disabled={controlsDisabled}>Agregar actividad</button>
             </div>
         );
     }

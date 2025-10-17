@@ -45,7 +45,7 @@ class ScheduleView extends InfernoComponent {
             return;
         }
         else {
-            document.getElementById("projectStart").remove("input-error");
+            document.getElementById("projectStart").classList.remove("input-error");
         }
 
         const projectEndDate = this.state.projectEndDate;
@@ -55,7 +55,7 @@ class ScheduleView extends InfernoComponent {
             return;
         }
         else {
-            document.getElementById("projectEnd").remove("input-error");
+            document.getElementById("projectEnd").classList.remove("input-error");
         }
 
         const tasks = this.state.taskList;
@@ -134,8 +134,13 @@ class ScheduleView extends InfernoComponent {
                     taskList={this.state.taskList}
                     addItem={this.addItem}
                     componentsEnabled={this.state.enableTaskComponents}
-                    minimumDate={this.state.projectStartDate} />
-                <Schedule className="h-3/6" taskList={this.state.taskList} />
+                    minimumDate={this.state.projectStartDate}
+                    maximumDate={this.state.projectEndDate} />
+                <Schedule
+                    className="h-3/6"
+                    taskList={this.state.taskList}
+                    minimumDate={this.state.projectStartDate}
+                    maximumDate={this.state.projectEndDate} />
                 <div className='h-1/6 flex justify-center'>
                     <input type='submit' className='btn btn-primary btn-lg self-center' value='Enviar' onClick={ this.sendData }/>
                 </div>
