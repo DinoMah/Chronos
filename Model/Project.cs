@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public Period Period { get; set; } = new Period();
+        public int Period { get; set; }
+        public bool Active { get; set; }
     }
 }

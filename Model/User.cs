@@ -11,5 +11,6 @@ namespace Chronos.Model
         public int Role { get; set; }
         public string Email { get; set; } = string.Empty;
         public int Area { get; set; }
+        public bool Active { get; set; }
     }
 }

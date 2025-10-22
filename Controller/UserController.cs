@@ -51,15 +51,31 @@ namespace Chronos.Controller
         }
 
         [HttpPost("save")]
-        public IActionResult SaveUser([FromBody] User user)
+        public async Task<IActionResult> SaveUser([FromBody] User user)
         {
-            return new JsonResult(user);
+            try
+            {
+                var SaveUser = await _userService.SaveUserAsync(user);
+                return Ok(SaveUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Could not save user: {ex}");
+            }
         }
 
         [HttpPost("update")]
-        public IActionResult UpdateUser([FromBody] User user)
+        public async Task<IActionResult> UpdateUser([FromBody] User user)
         {
-            return new JsonResult(user);
+            try
+            {
+                var UpdateUser = await _userService.UpdateUserAsync(user);
+                return Ok(UpdateUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Could not update user: {ex}");
+            }
         }
     }
 }
