@@ -9,28 +9,34 @@ class TaskForm extends InfernoComponent {
             userSelectDisabled: true,
             areaId: 0,
             areaName: "",
-            activity: "",
             userId: 0,
             userName: "",
-            initDate: "",
-            endDate: "",
             areas: [],
             users: [],
             filteredUsers: [],
+            editingRow: props.editingRow,
             selectedArea: props.selectedArea,
             selectedUser: props.selectedUser,
-            activity: props.activity,
-            startDate: props.startDate,
-            endDate: props.endDate
+            activity: props.activity || '',
+            startDate: props.startDate || '',
+            endDate: props.endDate || ''
         };
 
-        this.onRegisterAdd = this.onRegisterAdd.bind(this);
+        //this.onRegisterAdd = this.onRegisterAdd.bind(this);
     }
 
     componentDidMount() {
         console.log("taskFormMounted");
 
-        const { selectedArea, selectedUser, activity, startDate, endDate } = this.props;
+        let { selectedArea, selectedUser, activity, startDate, endDate, editingRow } = this.props;
+        
+        if (editingRow)
+        {
+            this.setState({
+                controlsDisabled: false,
+                userSelectDisabled: false
+            });
+        }
 
         this.setState({
             selectedArea: selectedArea || 0,
@@ -76,7 +82,7 @@ class TaskForm extends InfernoComponent {
 
     onAreaSelected = (event) => {
 
-        const selArea = event.target.selectedIndex;
+        const selArea = event.target.value;
 
         const disable = selArea == '0';
 
@@ -89,132 +95,110 @@ class TaskForm extends InfernoComponent {
         this.setState({
             userSelectDisabled: disable,
             filteredUsers: users,
-            areaId: selArea, 
-            areaName: event.target.options[selArea].text
+            areaId: parseInt(selArea), 
+            areaName: event.target.options[selArea].text,
+            selectedArea: parseInt(selArea)
         });
     }
 
     onUserSelected = (event) => {
-        const selUser = event.target.selectedIndex;
+        const selUser = event.target.value;
+        const selIndex = event.target.selectedIndex;
+        const selectedUserName = event.target.options[selIndex].text;
+
         this.setState({
-            userId: selUser,
-            userName: event.target.options[selUser].text
+            userId: parseInt(selUser),
+            userName: selectedUserName,
+            selectedUser: parseInt(selUser),
+            //filteredUsers: this.state.filteredUsers
         });
     }
 
-    onRegisterAdd() {
-        let badInputNum = 0;
+    onActivityInput(instance, event) {
+        instance.setState({activity: event.target.value});
+    }
 
-        const areaSelect = document.getElementsByName("areaSelect")[0];
-        if (!areaSelect.selectedIndex) {
-            areaSelect.classList.add("input-error");
-            areaSelect.focus();
-            badInputNum += 1;
-        }
-        else {
-            areaSelect.classList.remove("input-error");
-        }
+    onStartDateInput(instance, event) {
+        instance.setState({startDate: event.target.value});
+    }
 
-        const userSelect = document.getElementsByName("userSelect")[0];
-        if (!userSelect.selectedIndex) {
-            userSelect.classList.add("input-error");
-            userSelect.focus();
-            badInputNum += 1;
-        }
-        else {
-            userSelect.classList.remove("input-error");
-        }
-        
-        const activityInput = document.getElementsByName("activity")[0];
-        const activity = activityInput.value;
-        if (!activity) {
-            activityInput.classList.add("input-error");
-            activityInput.focus();
-            badInputNum += 1;
-        }
-        else {
-            activityInput.classList.remove("input-error");
-        }
-        
-        const initDateInput = document.getElementsByName("initDate")[0];
-        const initDate = initDateInput.value;
-        if (!initDate) {
-            initDateInput.classList.add("input-error");
-            initDateInput.focus();
-            badInputNum += 1;
-        }
-        else {
-            initDateInput.classList.remove("input-error");
-        }
-        
-        const endDateInput = document.getElementsByName("endDate")[0];
-        const endDate = document.getElementsByName("endDate")[0].value;
-        if (!endDate) {
-            endDateInput.classList.add("input-error");
-            endDateInput.focus();
-            badInputNum += 1;
-        }
-        else if (endDate < initDate) {
-            alert("La fecha de fin no debe ser menor a la fecha de inicio");
-            endDateInput.classList.add("input-error");
-            endDateInput.focus();
-            badInputNum += 1;
-        }
-        else {
-            endDateInput.classList.remove("input-error");
-        }
-        
-        if (badInputNum === 0) {
-            this.props.addItem({
-                taskNumber: 0,
-                areaId: this.state.areaId,
-                area: this.state.areaName,
-                userId: this.state.userId,
-                user: this.state.userName,
-                activity: activity,
-                initDate: initDate,
-                endDate: endDate
-            });
-        }
-        else {
-            alert("No se puede agregar la tarea, tiene campos erroneos o incompletos");
-        }
+    onEndDateInput(instance, event) {
+        instance.setState({endDate: event.target.value});
+    }
+
+    componentWillReceiveProps(nextProps, context) {
+        this.setState({controlsDisabled: !nextProps.componentsEnabled});
     }
 
     render() {
         const { className, minimumDate, maximumDate } = this.props;
-        const { selectedArea, selectedUser, activity, startDate, endDate } = this.state;
-        const controlsDisabled = !this.props.componentsEnabled;
-
+        const { selectedArea, selectedUser, activity, startDate, endDate, controlsDisabled } = this.state;
         return (
-            <div className={ `${className} flex flex-row content-center justify-center w-screen` }>
+            <div className={ `${className} flex flex-row content-center justify-center` }>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Área</legend>
-                    <Select name="areaSelect" className="w-30" disabled={controlsDisabled} selected={selectedArea} defaultValue="Selecciona el área" options={this.state.areas} onChange={ this.onAreaSelected }/>
+                    <Select
+                        data-input="areaSelect"
+                        name="areaSelect"
+                        className="w-30"
+                        disabled={controlsDisabled}
+                        selected={selectedArea}
+                        defaultValue="Selecciona el área"
+                        options={this.state.areas}
+                        onChange={ this.onAreaSelected }/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Usuario</legend>
-                    <Select name="userSelect" className="w-30" disabled={this.state.userSelectDisabled} selected={selectedUser} defaultValue="Selecciona el usuario" options={this.state.filteredUsers} onChange={ this.onUserSelected }/>
+                    <Select
+                        data-input="userSelect"
+                        name="userSelect"
+                        className="w-30"
+                        disabled={controlsDisabled || this.state.userSelectDisabled}
+                        selected={selectedUser}
+                        defaultValue="Selecciona el usuario"
+                        options={this.state.filteredUsers}
+                        onChange={ this.onUserSelected }/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Actividad</legend>
-                    <input name="activity" type="text" className="input w-72" disabled={controlsDisabled} value={activity}/>
+                    <input
+                        data-input="activity"
+                        name="activity"
+                        type="text"
+                        className="input w-72"
+                        disabled={controlsDisabled}
+                        value={activity}
+                        onInput={linkEvent(this, this.onActivityInput)}/>
                 </fieldset>
 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Fecha Inicio</legend>
-                    <input name="initDate" type="date" className="input w-32" min={minimumDate} max={maximumDate} disabled={controlsDisabled} value={startDate}/>
+                    <input
+                        data-input="startDate"
+                        name="initDate"
+                        type="date"
+                        className="input w-32"
+                        min={minimumDate} max={maximumDate}
+                        disabled={controlsDisabled} value={startDate}
+                        onInput={linkEvent(this, this.onStartDateInput)}/>
                 </fieldset>
                 
                 <fieldset className="fieldset ml-2">
                     <legend className="fieldset-legend">Fecha Final</legend>
-                    <input name="endDate" type="date" className="input w-32" min={minimumDate} max={maximumDate} disabled={controlsDisabled} value={endDate}/>
+                    <input
+                        data-input="endDate"
+                        name="endDate"
+                        type="date"
+                        className="input w-32"
+                        min={minimumDate} max={maximumDate}
+                        disabled={controlsDisabled} value={endDate}
+                        onInput={linkEvent(this, this.onEndDateInput)}/>
                 </fieldset>
                 
 
-                <button type="button" className="btn btn-success ml-15 self-center" onClick={ this.onRegisterAdd } disabled={controlsDisabled}>Agregar actividad</button>
+                <button type="button" className="btn btn-success ml-15 self-center" onClick={ this.props.onButtonPressed } disabled={controlsDisabled}>{this.props.buttonText}</button>
             </div>
         );
     }

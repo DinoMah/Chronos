@@ -19,12 +19,96 @@ class ScheduleView extends InfernoComponent {
             enableTaskComponents: false
         };
         this.addItem = this.addItem.bind(this);
+        this.onRegisterAdd = this.onRegisterAdd.bind(this);
     }
 
     addItem(item) {
         item.taskNumber = this.state.taskList.length + 1;
         const newTaskList = [...this.state.taskList, item];
         this.setState({ taskList: newTaskList });
+    }
+
+    onRegisterAdd() {
+        let badInputNum = 0;
+
+        const areaSelect = document.getElementsByName("areaSelect")[0];
+        const selAreaId = areaSelect.value;
+        const selAreaName = areaSelect.options[areaSelect.selectedIndex].text;
+        if (!areaSelect.selectedIndex) {
+            areaSelect.classList.add("input-error");
+            areaSelect.focus();
+            badInputNum += 1;
+        }
+        else {
+            areaSelect.classList.remove("input-error");
+        }
+
+        const userSelect = document.getElementsByName("userSelect")[0];
+        const selUserId = userSelect.value;
+        const selUserName = userSelect.options[userSelect.selectedIndex].text
+        if (!userSelect.selectedIndex) {
+            userSelect.classList.add("input-error");
+            userSelect.focus();
+            badInputNum += 1;
+        }
+        else {
+            userSelect.classList.remove("input-error");
+        }
+        
+        const activityInput = document.getElementsByName("activity")[0];
+        const activity = activityInput.value;
+        if (!activity) {
+            activityInput.classList.add("input-error");
+            activityInput.focus();
+            badInputNum += 1;
+        }
+        else {
+            activityInput.classList.remove("input-error");
+        }
+        
+        const initDateInput = document.getElementsByName("initDate")[0];
+        const initDate = initDateInput.value;
+        if (!initDate) {
+            initDateInput.classList.add("input-error");
+            initDateInput.focus();
+            badInputNum += 1;
+        }
+        else {
+            initDateInput.classList.remove("input-error");
+        }
+        
+        const endDateInput = document.getElementsByName("endDate")[0];
+        const endDate = document.getElementsByName("endDate")[0].value;
+        if (!endDate) {
+            endDateInput.classList.add("input-error");
+            endDateInput.focus();
+            badInputNum += 1;
+        }
+        else if (endDate < initDate) {
+            alert("La fecha de fin no debe ser menor a la fecha de inicio");
+            endDateInput.classList.add("input-error");
+            endDateInput.focus();
+            badInputNum += 1;
+        }
+        else {
+            endDateInput.classList.remove("input-error");
+        }
+        
+        if (badInputNum === 0) {
+            this.addItem({
+                taskNumber: 0,
+                areaId: selAreaId,
+                area: selAreaName,
+                userId: selUserId,
+                user: selUserName,
+                activity: activity,
+                initDate: initDate,
+                endDate: endDate
+            });
+        }
+        else {
+            alert("No se puede agregar la tarea, tiene campos erroneos o incompletos");
+        }
     }
 
     sendData = () => {
@@ -130,9 +214,11 @@ class ScheduleView extends InfernoComponent {
                     </fieldset>
                 </div>
                 <TaskForm
-                    className="h-1/6"
+                    className="h-1/6 w-screen"
                     taskList={this.state.taskList}
                     addItem={this.addItem}
+                    onButtonPressed={this.onRegisterAdd}
+                    buttonText='Agregar actividad'
                     componentsEnabled={this.state.enableTaskComponents}
                     minimumDate={this.state.projectStartDate}
                     maximumDate={this.state.projectEndDate} />

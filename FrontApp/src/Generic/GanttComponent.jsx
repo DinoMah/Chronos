@@ -72,7 +72,18 @@ class Cronogram extends Component {
             view_mode: 'Day',
             lines: 'none',
             column_width: 30,
-            readonly: true
+            readonly: true,
+            popup: (ctx) => {
+                ctx.set_title(ctx.task.name);
+                ctx.set_details(`
+                    <div>
+                        <input type="text"/>
+                    </div>
+                `);
+                ctx.add_action('Agregar nota', () => {
+                    alert("Se presiono el boton");
+                });
+            }
         };
 
         this.state.gantt = new Gantt("#gantt", this.state.tasks, chartConfiguration);
