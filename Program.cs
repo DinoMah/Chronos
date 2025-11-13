@@ -36,6 +36,7 @@ try
 
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IAreaService, AreaService>();
+    builder.Services.AddScoped<IRoleService, RoleService>();
 
     // Add services to the container.
 
