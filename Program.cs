@@ -42,8 +42,6 @@ try
   builder.Services.AddScoped<IProjectService, ProjectService>();
   builder.Services.AddScoped<IPeriodService, PeriodService>();
   builder.Services.AddScoped<ITaskService, TaskService>();
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IAreaService, AreaService>();
     builder.Services.AddScoped<IRoleService, RoleService>();
 
   // Add services to the container.
