@@ -16,7 +16,7 @@ namespace Chronos.Data
             _tableName = typeof(T).Name;
         }
 
-        private IDbConnection CreateConnection() => new SqlConnection(_connectionString);
+        protected IDbConnection CreateConnection() => new SqlConnection(_connectionString);
 
         public async Task<T> GetByIdAsync(int id)
         {

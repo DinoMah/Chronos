@@ -3,7 +3,7 @@
     public class Period
     {
         public int Id { get; set; }
-        public DateOnly InitDate { get; set; }
-        public DateOnly EndDate { get; set; }
+        public DateTime InitDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }

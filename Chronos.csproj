@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="FrontApp\" />
+    <Folder Include="FrontApp\src\Views\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

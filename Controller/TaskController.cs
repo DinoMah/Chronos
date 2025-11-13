@@ -17,25 +17,25 @@ namespace Chronos.Controller
         [HttpGet("{id:int}")]
         public IActionResult GetProjectTask(int id)
         {
-            return new JsonResult(new Model.WorkItem());
+            return new JsonResult(new WorkItem());
         }
 
         [HttpGet("all")]
         public IActionResult GetProjectTasks()
         {
-            return new JsonResult(new List<Model.WorkItem>());
+            return new JsonResult(new List<WorkItem>());
         }
 
         [HttpPost("new")]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateTask([FromBody] Model.WorkItem newTask)
+        public IActionResult CreateTask([FromBody] List<WorkItem> newTask)
         {
             return new JsonResult(newTask);
         }
 
         [HttpPost("update")]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateTask([FromBody] Model.WorkItem updatedTask)
+        public IActionResult UpdateTask([FromBody] WorkItem updatedTask)
         {
             return new JsonResult(updatedTask);
         }
