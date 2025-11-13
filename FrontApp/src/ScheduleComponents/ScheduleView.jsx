@@ -1,4 +1,5 @@
 import { Component as InfernoComponent } from 'inferno';
+//import { useHistory } from 'inferno-router';
 import Schedule from './schedule.jsx';
 import TaskForm from './taskForm.jsx';
 
@@ -142,13 +143,42 @@ class ScheduleView extends InfernoComponent {
             document.getElementById("projectEnd").classList.remove("input-error");
         }
 
+        if (projectEndDate < projectStartDate) {
+            alert("La fecha de fin del proyecto no debe ser menor a la fecha de inicio del mismo");
+            document.getElementById("projectStart").classList.add("input-error");
+            document.getElementById("projectStart").focus();
+            document.getElementById("projectEnd").classList.add("input-error");
+            document.getElementById("projectEnd").focus();
+        }
+        else {
+            document.getElementById("projectStart").classList.remove("input-error");
+            document.getElementById("projectEnd").classList.remove("input-error");
+        }
+
         const tasks = this.state.taskList;
         if (tasks.length === 0) {
             alert("¡No se agregaron tareas al proyecto!");
             return;
         }
 
-        // enviar los datos una vez todo esté correcto
+      const projectData = {
+        projectName: projectName,
+        initDate: projectStartDate,
+        endDate: projectEndDate,
+        tasks: tasks
+      };
+
+      fetch("http://localhost:5084/project/save", {
+        method: "POST",
+        body: JSON.stringify(projectData),
+        headers: { "Content-Type": "application/json" }
+      })
+        .then(response => {
+          if (!response.ok) throw new Error("Response was not okay");
+          return response.json();
+        })
+        .then(data => { console.log(data); alert(data); })
+        .catch(error => { console.log(error) });
     }
 
     onProjectNameChanged = (event) => {
