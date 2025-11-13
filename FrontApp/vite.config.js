@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import babel from 'vite-plugin-babel';
+import path from 'path';
 
 export default defineConfig({
   root: './src', // Carpeta raíz para el código fuente
@@ -30,6 +31,16 @@ export default defineConfig({
     })
   ],
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
+    alias: {
+      'inferno': process.env.NODE_ENV === 'development'
+        ? path.resolve(__dirname, 'node_modules/inferno/dist/index.dev.mjs')
+        : path.resolve(__dirname, 'node_modules/inferno/dist/index.mjs'),
+      'inferno-router': process.env.NODE_ENV === 'development'
+        ? path.resolve(__dirname, 'node_modules/inferno-router/dist/index.dev.mjs')
+        : path.resolve(__dirname, 'node_modules/inferno-router/dist/index.mjs'),
+      'react': 'inferno-compat',
+      'react-dom': 'inferno-compat'
+    }
   }
 });
