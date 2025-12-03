@@ -6,7 +6,9 @@ class Cronogram extends Component {
     super(props);
     this.state = {
       tasks: [],
-      gantt: null
+      gantt: null,
+      noteTaskId: null,
+      noteText: ""
     };
   }
 
@@ -101,21 +103,21 @@ class Cronogram extends Component {
   componentWillReceiveProps(nextProps, context) {
     if (this.state.gantt === null)
     {
-      const { tasks, taskPeriods } = nextProps;
+      const { tasks, taskPeriods, onAddNote } = nextProps;
 
       const barColor = "#0070c0";
       let taskList = [];
 
       tasks.forEach(task => {
-          const taskPeriod = taskPeriods.find(p => p.id = task.programmedPeriod);
+        const taskPeriod = taskPeriods.find(p => p.id = task.programmedPeriod);
 
-          taskList.push({
-              id: task.id,
-              name: task.description,
-              start: taskPeriod.initDate,
-              end: taskPeriod.endDate,
-              color: barColor
-          });
+        taskList.push({
+          id: task.id,
+          name: task.description,
+          start: taskPeriod.initDate,
+          end: taskPeriod.endDate,
+          color: barColor
+        });
       });
 
       const chartConfiguration = {
@@ -130,10 +132,14 @@ class Cronogram extends Component {
           ctx.set_title(ctx.task.name);
           ctx.set_details(`
             <div>
-              <input type="text"/>
+              <input id="noteInput" type="text"/>
             </div>
           `);
           ctx.add_action('Agregar nota', () => {
+            const noteText = document.getElementById('noteInput').value;
+            this.setState({ noteTaskId: ctx.task.id, noteText }, () => {
+              this.saveNote();
+            });
             alert("Se presiono el boton");
           });
         }
@@ -143,7 +149,33 @@ class Cronogram extends Component {
 
       this.setState({tasks: taskList, gantt: ganttDiagram});
     }
-  }
+    
+
+    }
+
+    saveNote = () => {
+        const { noteTaskId, noteText } = this.state;
+
+        fetch("http://localhost:5084/task/addNote", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ taskNumber: noteTaskId, note: noteText })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al guardar la nota');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Nota guardada exitosamente');
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
 
   render() {
     return (
