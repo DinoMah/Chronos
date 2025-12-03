@@ -7,6 +7,10 @@ import InfernoCompat from 'inferno-compat';
 import ScheduleView from './ScheduleComponents/ScheduleView.jsx';
 import LoginForm from './LoginComponents/LoginForm.jsx';
 import ProjectView from './Views/Project/ProjectView.jsx';
+import UserView from './Views/UserView';
+import UsersList from './Views/UsersList.jsx';
+import EditUser from './Views/EditUser.jsx';
+import ProjectListView from './Views/ProjectListView.jsx';
 
 console.log(import.meta.env.BASE_URL)
 console.log(import.meta.env);
@@ -32,7 +36,12 @@ render(
   <Router history={history}>
     <Route exact path='/' component={LoginForm}/>
     <Route exact path='/schedule' component={ScheduleView}/>
-    <Route exact path='/project/:id' component={ProjectView}/>
+        <Route exact path='/project/:id' component={ProjectView} />
+        <Route exact path='/user/new' component={UserView} />
+        <Route exact path='/user/list' component={UsersList} />
+        <Route exact path='/user/edit/:id' component={EditUser} />
+        <Route exact path='/projectList' component={ProjectListView} />
+
   </Router>,
   appDiv
 );
@@ -43,9 +52,6 @@ createIcons({
     stroke: "#000000"
   },
   icons: {
-    Search,
-    Eye,
-    HardDriveDownload,
-    Loader
+    Search
   }
 });

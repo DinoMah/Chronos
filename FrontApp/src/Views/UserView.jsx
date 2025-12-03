@@ -15,7 +15,6 @@ class UserView extends Component {
             areas: [],
             emailError: '',
             loading: true,
-            error: null,
         };
     }
     
@@ -31,50 +30,57 @@ class UserView extends Component {
             username = `${firstName}${lastName}`;
         } else if (words[0]) {
             username = words[0].slice(0, 6);
-        }
+        }   
 
         this.setState({ fullName, username });
     }
 
     componentDidMount() {
-        console.log("UserViewMounted");
+        const {
+            isEditMode,
+            areas,
+            roles,
+            initialFullName,
+            initialUsername,
+            initialEmail,
+            initialRole,
+            initialArea
+        } = this.props;
 
-        if (window.lucide && window.lucide.createIcons) {
-        }
-
-        Promise.all([
-            fetch("http://localhost:5084/area/all"),
-            fetch("http://localhost:5084/role/all"),
-        ])
+        if (isEditMode) {
+            
+            this.setState({
+                fullName: initialFullName || '',
+                username: initialUsername || '',
+                email: initialEmail || '',
+                role: initialRole || '',
+                area: initialArea || '',
+                areas: areas || [],
+                roles: roles || [],
+                loading: false
+            });
+        } else {
+            
+            Promise.all([
+                fetch("http://localhost:5084/area/all"),
+                fetch("http://localhost:5084/role/all")
+            ])
             .then(([areasRes, rolesRes]) => {
-                if (!areasRes.ok || !rolesRes.ok) {
-                    throw new Error("Error al obtener datos de áreas o roles");
-                }
+                if (!areasRes.ok || !rolesRes.ok) throw new Error("Error cargando datos");
                 return Promise.all([areasRes.json(), rolesRes.json()]);
             })
             .then(([areasData, rolesData]) => {
-                let rolesArray = [];
-                let areasArray = [];
-                areasData.forEach(e => {
-                    areasArray.push({ id: String(e.id), name: e.name });
-                })
-                rolesData.forEach(e => {
-                    rolesArray.push({ id: String(e.id), name: e.role });
-                    this.setState({
-                        areas: areasArray,
-                        roles: rolesArray,
-                        loading: false,
-                    })
-                })
+                this.setState({
+                    areas: areasData.map(a => ({ id: String(a.id), name: a.name })),
+                    roles: rolesData.map(r => ({ id: String(r.id), name: r.role })),
+                    loading: false
+                });
             })
-            .then(([areasData, rolesData]) => {
-                const areasArray = areasData.map(e => ({ id: e.id, name: e.name }));
-                const rolesArray = rolesData.map(e => ({ id: e.id, name: e.name }));
-            })
-
-
-            .catch(err => console.log(err))
-
+            .catch(err => {
+                console.error(err);
+                this.setState({ loading: false, error: "Error al cargar áreas o roles" });
+            });
+        }
     }
 
     handlePasswordChange = (e) => {
@@ -123,12 +129,12 @@ class UserView extends Component {
             body: JSON.stringify(data),
             headers: { "Content-Type": "application/json; charset=UTF-8" }
         })
-            .then((res) => {
-                if (!res.ok) throw new Error("Error: " + res.status);
-                return res.json();
-            })
-            .then((response) => console.log("Success:", response))
-            .catch((error) => console.error("Error:", error));
+        .then((res) => {
+            if (!res.ok) throw new Error("Error: " + res.status);
+            return res.json();
+        })
+        .then((response) => console.log("Success:", response))
+        .catch((error) => console.error("Error:", error));
 
         console.log('Usuario agregado:', this.state);
         this.setState({
@@ -142,33 +148,74 @@ class UserView extends Component {
             emailError: '',
         });
     }
+    handleSaveChanges = (e) => {
+        e.preventDefault();
+
+        const { fullName, username, email, role, area, password } = this.state;
+        const { isEditMode, userId } = this.props; 
+
+        if (!fullName || !username || !email || !role || !area) {
+            alert('Por favor completa todos los campos');
+            return;
+        }
+
+        const data = {
+            id: isEditMode ? userId : undefined,
+            fullName,
+            userName: username,
+            email,
+            role: Number(role),    
+            area: Number(area),    
+            ...(!isEditMode && password ? { password } : {})
+        };
+
+        const url = isEditMode
+            ? `http://localhost:5084/user/update` 
+            : 'http://localhost:5084/user/save';
+
+        fetch(url, {
+            method: isEditMode ? 'PUT' : 'POST',
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json; charset=UTF-8" }
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => { throw new Error(text || res.status) });
+            }
+            return res.json();
+        })
+        .then(() => {
+            alert(isEditMode ? "Usuario actualizado" : "Usuario creado");
+         
+            window.location.href = "/user/list";
+        })
+        .catch(err => {
+            console.error("Error:", err);
+            alert("Error al guardar: " + err.message);
+        });
+    };
 
     render() {
-        const { showPassword } = this.state;
-
         return (
             <div className="p-4 max-w-md mx-auto">
                 <h1 className="text-2xl font-bold mb-4">Registrar Usuarios</h1>
-                <form onSubmit={this.handleAddUser}>
+                <form onSubmit={this.handleSaveChanges}>
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-1" for="CompleteName">Nombre completo</label>
                         <input
-                        id="CompleteName"
-                            type="text"
-                            placeholder="Nombre completo"
-                            className="input input-bordered w-full"
                             value={this.state.fullName}
-                            onInput={this.handleFullNameChange}
-                            required
+                            onInput={this.props.isEditMode ? null : this.handleFullNameChange}
+                            readOnly={this.props.isEditMode}
+                            className={`input input-bordered w-full ${this.props.isEditMode ? 'bg-gray-100' : ''}`}
                         />
                     </div>
 
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-1" for="NameUser">Usuario</label>
                         <input
-                        id="NameUser"
+                            id="NameUser"
                             type="text"
-                            className="input input-bordered w-full bg-gray-100"
+                            className={`input input-bordered w-full ${this.props.isEditMode ? 'bg-gray-100' : ''}`}
                             value={this.state.username}
                             readOnly
                         />
@@ -180,11 +227,12 @@ class UserView extends Component {
                             <input
                                 id="Password"
                                 type={this.state.showPassword ? 'text' : 'password'}
-                                placeholder="Contraseña"
-                                className="input input-bordered w-full pr-10"
-                                value={this.state.password}
-                                onInput={this.handlePasswordChange}
-                                required
+                                placeholder={this.props.isEditMode ? '' : 'Contraseña'}
+                                className={`input input-bordered w-full pr-10 ${this.props.isEditMode ? 'bg-gray-100' : ''}`}
+                                value={this.props.isEditMode ? '••••••••••••' : this.state.password}
+                                onInput={this.props.isEditMode ? null : this.handlePasswordChange}
+                                readOnly={this.props.isEditMode}
+                                required={!this.props.isEditMode}  
                             />
                             <button
                                 type="button"
@@ -247,7 +295,7 @@ class UserView extends Component {
                     </div>
                     <div className="mt-6">
                         <button type="submit" className="btn btn-primary w-full">
-                            Agregar
+                            {this.props.isEditMode ? 'Guardar Cambios' : 'Agregar Usuario'}
                         </button>
                     </div>
                 </form>
