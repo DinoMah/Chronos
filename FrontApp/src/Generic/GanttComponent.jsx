@@ -107,19 +107,21 @@ class Cronogram extends Component {
       let taskList = [];
 
       tasks.forEach(task => {
-          const taskPeriod = taskPeriods.find(p => p.id = task.programmedPeriod);
+          const taskPeriod = taskPeriods.find(p => p.id == task.programmedPeriod);
+          const splitInitDate = taskPeriod.initDate.split("T");
+          const splitEndDate = taskPeriod.endDate.split("T");
 
           taskList.push({
               id: task.id,
               name: task.description,
-              start: taskPeriod.initDate,
-              end: taskPeriod.endDate,
+              start: splitInitDate[0],
+              end: splitEndDate[0],
               color: barColor
           });
       });
 
       const chartConfiguration = {
-        container_height: 500,
+        container_height: 'auto',
         //infinite_padding: false,
         today_button: false,
         view_mode: 'Day',

@@ -36,8 +36,8 @@ class Schedule extends InfernoComponent {
 			height: "100%",
 			layout: "fitColumns", //fit columns to width of table (optional)
 			data: this.props.taskList,
-			columns:[ //Define Table Columns
-				{ title:"# Tarea", field:"taskNumber", hozAlign: "center", width: "auto", resizable: false, headerSort: false, headerHozAlign: "center" },
+			columns:[ //Define Table Columns width: "auto", 
+				{ title:"# Tarea", field:"taskNumber", hozAlign: "center", resizable: false, headerSort: false, headerHozAlign: "center" },
 				{ title:"Área", field:"area", hozAlign:"center", resizable: false, headerSort: false, headerHozAlign: "center" },
 				{ title:"Actividad", field: "activity", hozAlign: "center", frozen: true, headerSort: false, headerHozAlign: "center" },
 				{ title:"Responsable", field:"user", hozAlign:"center", resizable: false, headerSort: false, headerHozAlign: "center" },
