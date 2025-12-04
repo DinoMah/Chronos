@@ -1,4 +1,5 @@
 import { Component as InfernoComponent } from 'inferno';
+import { withRouter } from 'inferno-router';
 //import { useHistory } from 'inferno-router';
 import Schedule from './schedule.jsx';
 import TaskForm from './taskForm.jsx';
@@ -21,6 +22,14 @@ class ScheduleView extends InfernoComponent {
         };
         this.addItem = this.addItem.bind(this);
         this.onRegisterAdd = this.onRegisterAdd.bind(this);
+    }
+
+    componentDidMount() {
+        const { isEditing } = this.props;
+
+        if (isEditing) {
+            
+        }
     }
 
     addItem(item) {
