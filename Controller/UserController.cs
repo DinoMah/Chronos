@@ -42,6 +42,8 @@ namespace Chronos.Controller
             try
             {
                 var user = await _userService.GetUserByIdAsync(id);
+                if (user == null)
+                    return NotFound(new { message = "Usuario no encontrado" });
                 return Ok(user);
             }
             catch (Exception ex)
@@ -64,7 +66,7 @@ namespace Chronos.Controller
             }
         }
 
-        [HttpPost("update")]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateUser([FromBody] User user)
         {
             try
@@ -75,6 +77,26 @@ namespace Chronos.Controller
             catch (Exception ex)
             {
                 return BadRequest($"Could not update user: {ex}");
+            }
+        }
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                var user = await _userService.GetUserByIdAsync(id);
+                if (user == null)
+                    return NotFound();
+
+                var deleteResult = await _userService.DeleteUserAsync(id);
+                if (!deleteResult)
+                    return BadRequest("Could not delete user");
+
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Could not delete user: {ex}");
             }
         }
     }

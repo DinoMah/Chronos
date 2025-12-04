@@ -1,5 +1,6 @@
-﻿using Chronos.Model;
-using Microsoft.AspNetCore.Http;
+﻿using Chronos.DTOs;
+using Chronos.Model;
+using Chronos.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chronos.Controller
@@ -8,6 +9,13 @@ namespace Chronos.Controller
     [Route("[controller]")]
     public class TaskController : ControllerBase
     {
+        private readonly ITaskService _taskService;
+
+        public TaskController(ITaskService taskService)
+        {
+            _taskService = taskService;
+        }
+
         [HttpGet]
         public ActionResult Index()
         {
@@ -46,6 +54,13 @@ namespace Chronos.Controller
         public ActionResult Delete(int id)
         {
             return new JsonResult(new { });
+        }
+
+        [HttpPost("addNote")]
+        public async Task<IActionResult> AddNoteAsync([FromBody] NoteDTO newNote)
+        {
+            await _taskService.SaveNoteAsync(newNote); 
+            return Ok(new { message = "Note saved successfully." }); 
         }
     }
 }

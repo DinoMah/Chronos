@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Chronos.DTOs;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Serilog;
 using System.Data;
@@ -116,6 +117,11 @@ namespace Chronos.Data
                 Log.Error($"Error in {nameof(DeleteAsync)}: {ex.Message}");
                 return false;
             }
+        }
+
+        public Task<NoteDTO?> SaveNote(NoteDTO addNote)
+        {
+            throw new NotImplementedException();
         }
     }
 }
