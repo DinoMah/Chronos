@@ -9,6 +9,9 @@ export default defineConfig({
   build: {
     outDir: '../../wwwroot', // Genera archivos en wwwroot de .NET
     emptyOutDir: true, // Limpia la carpeta de salida
+    commonjsOptions: {
+        exclude: ['inferno', 'inferno-compat', 'frappe-gantt']
+    }
   },
   server: {
     port: 3000, // Puerto de desarrollo de Vite
@@ -30,6 +33,9 @@ export default defineConfig({
       }
     })
   ],
+  optimizeDeps: {
+    exclude: ['inferno', 'inferno-compat', 'frappe-gantt']
+  },
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
